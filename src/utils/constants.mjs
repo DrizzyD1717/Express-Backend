@@ -1,11 +1,41 @@
 export const mockUsers = [
-  { id: 1, username: "Alice", displayName: "Alice Smith" },
-  { id: 2, username: "Bob", displayName: "Bob Johnson" },
-  { id: 3, username: "Charlie", displayName: "Charlie Brown" },
-  { id: 4, username: "David", displayName: "David Wilson" },
-  { id: 5, username: "Eve", displayName: "Eve Davis" },
-  { id: 6, username: "Frank", displayName: "Frank Miller" },
-  { id: 7, username: "Grace", displayName: "Grace Lee" },
+  {
+    id: 1,
+    username: "Alice",
+    displayName: "Alice Smith",
+    password: "password123",
+  },
+  {
+    id: 2,
+    username: "Bob",
+    displayName: "Bob Johnson",
+    password: "password456",
+  },
+  {
+    id: 3,
+    username: "Charlie",
+    displayName: "Charlie Brown",
+    password: "password789",
+  },
+  {
+    id: 4,
+    username: "David",
+    displayName: "David Wilson",
+    password: "password012",
+  },
+  { id: 5, username: "Eve", displayName: "Eve Davis", password: "password345" },
+  {
+    id: 6,
+    username: "Frank",
+    displayName: "Frank Miller",
+    password: "password678",
+  },
+  {
+    id: 7,
+    username: "Grace",
+    displayName: "Grace Lee",
+    password: "password901",
+  },
 ];
 
 export const mockProducts = [

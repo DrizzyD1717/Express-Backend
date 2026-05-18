@@ -16,6 +16,13 @@ router.get(
   query("value").isString().notEmpty().isLength({ min: 3, max: 10 }),
 
   (req, res) => {
+    req.sessionStore.get(req.session.id, (err, sessionData) => {
+      if (err) {
+        console.log(err);
+        throw err;
+      }
+      console.log(sessionData);
+    });
     const result = validationResult(req);
     const {
       query: { filter, value },
