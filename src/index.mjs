@@ -4,11 +4,21 @@ import usersRouter from "./routes/users.mjs";
 import productsRouter from "./routes/products.mjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import { mockUsers } from "./utils/constants.mjs";
 import passport from "passport";
 import "./strategies/local-strategy.mjs";
+import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
 
 const app = express();
+
+mongoose
+  .connect("mongodb://localhost:27017/session-auth")
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB", err);
+  });
 
 app.use(express.json());
 app.use(cookieParser("helloworld"));
@@ -16,10 +26,14 @@ app.use(
   session({
     secret: "helloworld",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
       maxAge: 60000 * 60, // 1 hour
     },
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
+      dbName: "session-auth",
+    }),
   }),
 );
 app.use(passport.initialize());
@@ -44,6 +58,13 @@ app.get("/", (req, res) => {
 
 app.post("/api/auth", passport.authenticate("local"), (req, res) => {
   res.status(200).send(req.user);
+});
+
+app.get("/api/auth/status", (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.status(200).send(req.user);
+  }
+  res.status(401).send({ message: "Not authenticated." });
 });
 
 app.post("/api/auth/logout", (req, res) => {

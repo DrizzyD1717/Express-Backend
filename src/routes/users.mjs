@@ -7,6 +7,8 @@ import {
 } from "express-validator";
 import { mockUsers } from "../utils/constants.mjs";
 import { createuservalidationSchema } from "../utils/validationSchema.mjs";
+import { User } from "../mongoose/schema/user.mjs";
+import { hashPassword } from "../utils/helpers.mjs";
 
 const router = Router();
 
@@ -57,35 +59,28 @@ router.get("/api/users/:id", (req, res) => {
   res.status(201).send(singleUser);
 });
 
-// app.use(loggedInMiddleware);
-
-// The below function is used to create a new user. It validates the request body and adds the new user to the mockUsers array.
+// The below function is used to create a new user.
 router.post(
   "/api/users",
   checkSchema(createuservalidationSchema),
-  // [
-  //   body("username")
-  //     .notEmpty()
-  //     .withMessage("Username is required")
-  //     .isLength({ min: 5, max: 32 })
-  //     .withMessage("Username must be between 5 and 32 characters")
-  //     .isString()
-  //     .withMessage("Username must be a string"),
-  //   body("displayName").notEmpty().withMessage("Display name is required"),
-  // ],
-  (req, res) => {
+  async (req, res) => {
     const result = validationResult(req);
-    console.log(result);
     if (!result.isEmpty()) {
       return res.status(400).send({ errors: result.array() });
     }
 
     const data = matchedData(req);
     console.log(data);
-    const newUser = { id: mockUsers.length + 1, ...data };
-    mockUsers.push(newUser);
+    data.password = await hashPassword(data.password);
+    console.log(data);
+    const newUser = new User(data);
 
-    return res.status(201).send(newUser);
+    try {
+      const savedUser = await newUser.save();
+      res.status(201).send(savedUser);
+    } catch (error) {
+      res.status(400).send({ error: error.message });
+    }
   },
 );
 
